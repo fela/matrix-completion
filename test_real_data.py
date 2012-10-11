@@ -103,11 +103,5 @@ def run_experiment(**opt):
     legend(loc=0)
 
 
-# experiments
-def e1():
-    #opt = {
-    #    'steps': 10    
-    #}
-    run_experiment(steps=5, alpha=100000, mu_d=1, completion='matrix', seed=10)
-
-e1()
+# example experiment
+run_experiment(steps=5, alpha=100000, mu_d=1, completion='matrix', seed=10)

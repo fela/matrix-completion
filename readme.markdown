@@ -13,4 +13,7 @@ The main method you will want to use is `matrix_decomposition()` which decompose
 * `mu_d`: regularization parameter for the sparse GA matrix. Use higher values if no spikes are expected.
 * `alpha`: parameter that limits the maximum element of the low rank TH matrix. Bigger matrices will need a bigger `alpha` values.
 
+It will return TH and GA.
+
 Additionally the code contains some methods and classes to generate synthetic matrices and to test the decomposition in various ways.
+
