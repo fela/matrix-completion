@@ -134,7 +134,9 @@ def exp_range(minval=0.001, maxval=100, steps=10):
     max_exp = sp.log(maxval)
     return sp.exp(sp.linspace(min_exp, max_exp, num=steps))
 
-# example experiment
+# test for different completion percentage
+# more runs are made to get an estimate of the variance
+# and completion using the mean of the column is used for comparison
 def experiment1():
     for s in range(5):
         holes_experiment(steps=10, alpha=100000, completion='matrix', seed=s)
@@ -143,7 +145,7 @@ def experiment1():
         
     holes_experiment(steps=20, runs=5, alpha=100000, completion='mean', seed=0, label='mean')
 
-
+# test different values of mu_d
 def experiment2():
     params = exp_range(0.00001, 100, 30)
     param_experiment('mu_d', params, alpha=100000, label='0.2')
@@ -151,6 +153,7 @@ def experiment2():
     params = exp_range(0.00001, 100, 30)
     param_experiment('mu_d', params, alpha=100000, holes=0.6, label='0.6')
 
+# test different values of lambda_d
 def experiment3():
     params = exp_range(0.005, 0.2,)
     param_experiment('lambda_d', params, alpha=100000, label='0.2')
