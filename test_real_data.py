@@ -46,8 +46,25 @@ class Experiment:
             res, _ = md.matrix_decomposition(self.Y, self.mask, **self.options)
         elif self.completion == 'mean':
             means = self.Y.mean(0) # means along the column axis
-            #print means
+            # calculate the true means along the column axis
+            # using only the values in the mask
             rows, cols = self.Y.shape
+            means = sp.zeros(cols)
+            # calculate the true means along the column axis
+            # using only the values in the mask
+            for c in range(cols):
+                sum = 0.0
+                n = 0
+                for r in range(rows):
+                    if self.mask[r][c]:
+                        sum += self.Y[r][c]
+                        n += 1
+                if n == 0:
+                    means[c] = 0
+                else:
+                    means[c] = sum/n
+            
+            print means
             res = double(self.Y)
             for r in range(rows):
                 for c in range(cols):
