@@ -19,7 +19,9 @@ class Experiment:
         # default values
         self.filename = opt.pop('filename', None) or 'SMALL'
         self.seed = opt.pop('seed', None) or 0
-        self.holes = opt.pop('holes', None) or 0.2 # holes percentage
+        self.holes = opt.pop('holes', None) 
+        if self.holes == None:
+            self.holes == 0.2 # holes percentage
         self.completion = opt.pop('completion', None) or 'matrix'
         
         self.options = opt
@@ -31,13 +33,13 @@ class Experiment:
         Y, Mask = self.Y, self.mask
         #print Mask
         A = self.matrix_completion()
-        #print TH*Mask
-        #print A
-        diff = (TH-A)#*(1-Mask)
-        #print diff
-        #print Mask.sum()
-        error = sqrt((diff**2).sum() / TH.size)
-        return error
+        
+        n = (1-Mask).sum()
+        diff = (TH-A)*(1-Mask)
+        sqerr = (diff**2).sum()
+        if n != 0:
+            sqerr /= n
+        return sqrt(sqerr)
     
     def matrix_completion(self):
         if self.completion == 'matrix':
@@ -125,6 +127,6 @@ def param_experiment(param_name, params, **opt):
 
 
 # example experiment
-#hole_experiment(steps=15, alpha=100000, mu_d=1, completion='mean', seed=10, label='mean')
-param_experiment('mu_d', [0, 0.3, 0.6, 0.9, 1.2], alpha=100000)
+hole_experiment(steps=20, alpha=100000, mu_d=1, completion='mean', seed=0, label='mean')
+#param_experiment('mu_d', [0.3, 0.6, 0.9, 1.2], alpha=100000)
 #param_experiment('alpha', [1, 2, 3, 4, 5, 6], alpha=100000)
