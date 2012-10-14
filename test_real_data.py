@@ -16,9 +16,10 @@ import matrixdecomposition as md
 #############################################################
 class Experiment:
     def __init__(self, **opt):
+        # default values
         self.filename = opt.pop('filename', None) or 'SMALL'
         self.seed = opt.pop('seed', None) or 0
-        self.holes = opt.pop('holes', None) or 0.0 # holes percentage
+        self.holes = opt.pop('holes', None) or 0.2 # holes percentage
         self.completion = opt.pop('completion', None) or 'matrix'
         
         self.options = opt
@@ -110,10 +111,20 @@ def hole_experiment(**opt):
         x.append(sp.array(acc).mean())
     plot(y, x, label=label)
     legend(loc=0)
-        
-        
-    
+
+def param_experiment(param_name, params, **opt):
+    label = opt.pop('label', None) or param_name
+    x = []
+    for p in params:
+        opt[param_name] = p
+        e = Experiment(**opt)
+        x.append(e.run())
+    print x
+    plot(params, x, label=label)
+    legend(loc=0)
 
 
 # example experiment
-hole_experiment(steps=15, alpha=100000, mu_d=1, completion='mean', seed=10, label='mean')
+#hole_experiment(steps=15, alpha=100000, mu_d=1, completion='mean', seed=10, label='mean')
+param_experiment('mu_d', [0, 0.3, 0.6, 0.9, 1.2], alpha=100000)
+#param_experiment('alpha', [1, 2, 3, 4, 5, 6], alpha=100000)
