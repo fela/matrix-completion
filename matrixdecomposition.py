@@ -20,7 +20,7 @@ Decomposes an optionally incomplete matrix, into two components, one low rank, a
 
 It will return TH and GA.
 """
-def matrix_decomposition(Y, Mask=None, lambda_d=0.01, mu_d=0.004, alpha=20, max_iterations=1000):
+def matrix_decomposition(Y, Mask=None, lambda_d=0.025, mu_d=0.005, alpha=20, max_iterations=1000):
     # default value
     if Mask == None:        
         Mask = Y*0+1

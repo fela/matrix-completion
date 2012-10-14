@@ -19,9 +19,10 @@ class Experiment:
         # default values
         self.filename = opt.pop('filename', None) or 'SMALL'
         self.seed = opt.pop('seed', None) or 0
-        self.holes = opt.pop('holes', None) 
+        self.holes = opt.pop('holes', None)
+        # do not overwrite if holes is set to .0!
         if self.holes == None:
-            self.holes == 0.2 # holes percentage
+            self.holes = 0.2 # holes percentage
         self.completion = opt.pop('completion', None) or 'matrix'
         
         self.options = opt
@@ -31,7 +32,6 @@ class Experiment:
         self.generate_mask()
         TH, GA = self.TH, self.GA
         Y, Mask = self.Y, self.mask
-        #print Mask
         A = self.matrix_completion()
         
         n = (1-Mask).sum()
@@ -64,7 +64,6 @@ class Experiment:
                 else:
                     means[c] = sum/n
             
-            #print means
             res = double(self.Y)
             for r in range(rows):
                 for c in range(cols):
@@ -81,12 +80,12 @@ class Experiment:
         self.Y = self.TH + self.GA
     
     def generate_mask(self, holes=None):
-        if holes:
+        if holes != None:
             self.holes = holes
         rows, cols = self.GA.shape
         if self.seed != None:
             seed(self.seed)
-        self.mask = rand(rows,cols) > self.holes    
+        self.mask = rand(rows,cols) > self.holes
     
     @staticmethod
     def load_data(filename):
@@ -96,7 +95,7 @@ class Experiment:
         X = M[:, range(1, M.shape[1])]
         return (X, y)
 
-def hole_experiment(**opt):
+def holes_experiment(**opt):
     n = opt.pop('steps', None) or 5
     runs = opt.pop('runs', None) or 1
     label = opt.pop('label', None)
@@ -116,17 +115,45 @@ def hole_experiment(**opt):
 
 def param_experiment(param_name, params, **opt):
     label = opt.pop('label', None) or param_name
+    scale = opt.pop('scale', None) or 'linear'
     x = []
     for p in params:
+        print '.',
         opt[param_name] = p
         e = Experiment(**opt)
         x.append(e.run())
-    print x
+    xscale(scale)
     plot(params, x, label=label)
     legend(loc=0)
 
 
+
+# exponential range
+def exp_range(minval=0.001, maxval=100, steps=10):
+    min_exp = sp.log(minval)
+    max_exp = sp.log(maxval)
+    return sp.exp(sp.linspace(min_exp, max_exp, num=steps))
+
 # example experiment
-hole_experiment(steps=20, alpha=100000, mu_d=1, completion='mean', seed=0, label='mean')
-#param_experiment('mu_d', [0.3, 0.6, 0.9, 1.2], alpha=100000)
-#param_experiment('alpha', [1, 2, 3, 4, 5, 6], alpha=100000)
+def experiment1():
+    for s in range(5):
+        holes_experiment(steps=10, alpha=100000, completion='matrix', seed=s)
+    
+    #holes_experiment(steps=10, alpha=100000, mu_d=1, completion='matrix', label='mu_d=1')
+        
+    holes_experiment(steps=20, runs=5, alpha=100000, completion='mean', seed=0, label='mean')
+
+
+def experiment2():
+    params = exp_range(0.00001, 100, 30)
+    param_experiment('mu_d', params, alpha=100000, label='0.2')
+    figure()
+    params = exp_range(0.00001, 100, 30)
+    param_experiment('mu_d', params, alpha=100000, holes=0.6, label='0.6')
+
+def experiment3():
+    params = exp_range(0.005, 0.2,)
+    param_experiment('lambda_d', params, alpha=100000, label='0.2')
+    figure()
+    param_experiment('lambda_d', params, alpha=100000, holes=0.6, label='0.2')
+    
